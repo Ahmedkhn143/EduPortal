@@ -17,24 +17,33 @@ if (isset($_GET['del'])) {
     $conn->prepare("DELETE FROM students WHERE id=?")->execute([$_GET['del']]);
     header("Location: index.php");
 }
-
-// --- 3. SAVE & UPDATE LOGIC ---
+// --- 3. SAVE & UPDATE LOGIC (Updated with Duplicate Check) ---
 if (isset($_POST['save'])) {
     $n = $_POST['name'];
     $e = $_POST['email'];
     $c = $_POST['course'];
     $p = $_POST['phone'];
+    $id = $_POST['id'];
 
-    if ($_POST['id'] != 0) {
-        // Update Query
-        $sql = "UPDATE students SET name=?, email=?, course=?, phone=? WHERE id=?";
-        $conn->prepare($sql)->execute([$n, $e, $c, $p, $_POST['id']]);
-    } else {
-        // Insert Query
-        $sql = "INSERT INTO students (name, email, course, phone) VALUES (?, ?, ?, ?)";
-        $conn->prepare($sql)->execute([$n, $e, $c, $p]);
+    try {
+        if ($id != 0) {
+            // Update Query
+            $sql = "UPDATE students SET name=?, email=?, course=?, phone=? WHERE id=?";
+            $conn->prepare($sql)->execute([$n, $e, $c, $p, $id]);
+        } else {
+            // Insert Query
+            $sql = "INSERT INTO students (name, email, course, phone) VALUES (?, ?, ?, ?)";
+            $conn->prepare($sql)->execute([$n, $e, $c, $p]);
+        }
+        header("Location: index.php");
+    } catch (PDOException $ex) {
+        // Agar email pehle se maujood ho
+        if ($ex->getCode() == 23000) {
+            echo "<script>alert('Error: Ye Email pehle se register hai!'); window.location='index.php';</script>";
+        } else {
+            echo "Error: " . $ex->getMessage();
+        }
     }
-    header("Location: index.php");
 }
 
 // --- 4. EDIT LOGIC (Form fill karne ke liye) ---
