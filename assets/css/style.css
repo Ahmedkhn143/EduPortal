@@ -1,0 +1,5 @@
+/* Basic styles for EduPortal placeholder */
+body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+.header { background: #2c3e50; color: white; padding: 1rem; }
+.container { padding: 1rem; }
+.footer { background: #f4f4f4; padding: 1rem; text-align: center; }
