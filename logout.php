@@ -1,7 +1,7 @@
 <?php
 session_start();
-session_unset(); // Tamam variables khatam karein
-session_destroy(); // Session khatam karein
+session_unset();
+session_destroy();
 header("Location: login.php");
 exit();
 ?>
