@@ -1,9 +1,12 @@
 <?php
 session_start();
 include '../../config/db.php';
+include '../../includes/functions.php';
 
+// Security Check (Using your new functions.php logic)
 if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../login.php"); exit();
+    header("Location: ../../login.php");
+    exit();
 }
 
 $today = date('Y-m-d');
@@ -11,77 +14,94 @@ $message = "";
 
 // --- 1. SAVE ATTENDANCE LOGIC ---
 if (isset($_POST['mark_attendance'])) {
-    $att_data = $_POST['status']; // Array of statuses [student_id => status]
+    $att_data = $_POST['status']; // Array: [student_id => status]
     
     try {
         foreach ($att_data as $s_id => $status) {
-            // INSERT or UPDATE logic (Duplicate entry handle karne ke liye)
+            // ON DUPLICATE KEY UPDATE: Agar aaj ki attendance lag chuki hai to update hogi, warna insert.
             $sql = "INSERT INTO attendance (student_id, attendance_date, status) 
                     VALUES (?, ?, ?) 
                     ON DUPLICATE KEY UPDATE status = ?";
             $conn->prepare($sql)->execute([$s_id, $today, $status, $status]);
         }
-        $message = "Attendance successfully marked for today!";
+        $message = "Attendance marked successfully for " . date('d M, Y');
     } catch (PDOException $e) {
         $message = "Error: " . $e->getMessage();
     }
 }
 
-// --- 2. FETCH STUDENTS & TODAY'S ATTENDANCE ---
-$students = $conn->query("SELECT s.id, s.name, a.status 
-                          FROM students s 
-                          LEFT JOIN attendance a ON s.id = a.student_id AND a.attendance_date = '$today'")
-                  ->fetchAll();
+// --- 2. FETCH STUDENTS & TODAY'S ATTENDANCE STATUS ---
+// LEFT JOIN is liye taake jo student aaj absent ya present nahi mark hue, wo bhi nazar aayein
+$query = "SELECT s.id, s.name, a.status 
+          FROM students s 
+          LEFT JOIN attendance a ON s.id = a.student_id AND a.attendance_date = '$today'
+          ORDER BY s.name ASC";
+$students = $conn->query($query)->fetchAll();
 
 include '../../includes/header.php';
 ?>
 
-<div class="module-card" style="background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h2>Daily Attendance</h2>
-        <span style="background: #34495e; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px;">
-            Date: <strong><?= date('d M, Y'); ?></strong>
-        </span>
+<div class="module-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+        <h2 style="color: #1e293b;">Daily Attendance</h2>
+        <div style="background: #e2e8f0; padding: 8px 15px; border-radius: 8px; font-weight: 600; font-size: 14px; color: #475569;">
+            📅 Today: <?= date('d M, Y'); ?>
+        </div>
     </div>
 
     <?php if($message): ?>
-        <p style="background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin-bottom: 20px;"><?= $message; ?></p>
+        <div style="padding: 15px; background: #dcfce7; color: #166534; border-radius: 8px; margin-bottom: 20px; font-size: 14px; font-weight: 500;">
+            ✅ <?= $message; ?>
+        </div>
     <?php endif; ?>
 
     <form method="POST">
-        <table style="width: 100%; border-collapse: collapse;">
-            <thead style="background: #f8f9fa;">
+        <table>
+            <thead>
                 <tr>
-                    <th style="padding: 15px; text-align: left;">Student Name</th>
-                    <th style="padding: 15px; text-align: center;">Status</th>
+                    <th>Student Name</th>
+                    <th style="text-align: center;">Status (Present / Absent)</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($students as $s): ?>
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="padding: 15px; font-weight: 500;"><?= htmlspecialchars($s['name']) ?></td>
-                    <td style="padding: 15px; text-align: center;">
-                        <label style="margin-right: 15px; cursor: pointer;">
-                            <input type="radio" name="status[<?= $s['id'] ?>]" value="Present" 
-                                   <?= ($s['status'] == 'Present') ? 'checked' : '' ?> required> 
-                            <span style="color: #27ae60; font-weight: bold;">P</span>
-                        </label>
-                        <label style="cursor: pointer;">
-                            <input type="radio" name="status[<?= $s['id'] ?>]" value="Absent" 
-                                   <?= ($s['status'] == 'Absent') ? 'checked' : '' ?> required> 
-                            <span style="color: #e74c3c; font-weight: bold;">A</span>
-                        </label>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if($students): ?>
+                    <?php foreach ($students as $s): ?>
+                    <tr>
+                        <td style="font-weight: 500; color: #334155;"><?= htmlspecialchars($s['name']) ?></td>
+                        <td style="text-align: center;">
+                            <div style="display: inline-flex; gap: 20px;">
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                    <input type="radio" name="status[<?= $s['id'] ?>]" value="Present" 
+                                           <?= ($s['status'] == 'Present') ? 'checked' : '' ?> required> 
+                                    <span style="color: #16a34a; font-weight: 700;">P</span>
+                                </label>
+                                <label style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                                    <input type="radio" name="status[<?= $s['id'] ?>]" value="Absent" 
+                                           <?= ($s['status'] == 'Absent') ? 'checked' : '' ?> required> 
+                                    <span style="color: #dc2626; font-weight: 700;">A</span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="2" style="text-align: center; padding: 40px; color: #94a3b8;">
+                            Koi student register nahi hai. Pehle students add karein.
+                        </td>
+                    </tr>
+                <?php endif; ?>
             </tbody>
         </table>
 
-        <div style="margin-top: 30px; text-align: right;">
-            <button type="submit" name="mark_attendance" style="background: #2c3e50; color: white; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: bold;">
-                Submit Attendance
+        <?php if($students): ?>
+        <div style="margin-top: 30px; display: flex; justify-content: flex-end;">
+            <button type="submit" name="mark_attendance" 
+                    style="background: #3b82f6; color: white; border: none; padding: 12px 35px; border-radius: 8px; cursor: pointer; font-weight: 700; transition: 0.3s;">
+                Save Attendance
             </button>
         </div>
+        <?php endif; ?>
     </form>
 </div>
 
