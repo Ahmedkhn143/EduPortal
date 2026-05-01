@@ -1,5 +1,124 @@
-/* Basic styles for EduPortal placeholder */
-body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-.header { background: #2c3e50; color: white; padding: 1rem; }
-.container { padding: 1rem; }
-.footer { background: #f4f4f4; padding: 1rem; text-align: center; }
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    background-color: #f4f7f6;
+    color: #333;
+}
+
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* --- Sidebar Styling --- */
+.sidebar {
+    width: 260px;
+    background: #1e293b; /* Premium Dark Navy */
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    padding: 30px 20px;
+    background: #0f172a;
+    text-align: center;
+    border-bottom: 1px solid #334155;
+}
+
+.nav-links {
+    list-style: none;
+    padding: 20px 0;
+}
+
+.nav-links li a {
+    display: block;
+    padding: 15px 25px;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.nav-links li a:hover {
+    background: #334155;
+    color: #ffffff;
+    padding-left: 30px; /* Slight push effect */
+    border-left: 4px solid #3b82f6;
+}
+
+/* --- Main Content Area --- */
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.top-nav {
+    background: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: flex-end;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+}
+
+.content-body {
+    padding: 30px;
+    flex: 1;
+}
+
+/* --- Global Elements (Cards, Tables, Forms) --- */
+.module-card {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table th, table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+table th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+input, select {
+    outline: none;
+    transition: 0.3s;
+}
+
+input:focus, select:focus {
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* --- Footer --- */
+.main-footer {
+    background: white;
+    text-align: center;
+    padding: 15px;
+    font-size: 13px;
+    color: #64748b;
+    border-top: 1px solid #e2e8f0;
+}
