@@ -6,31 +6,34 @@ $full_name = '';
 $email = '';
 
 if (isset($_POST['register'])) {
-    $full_name = trim($_POST['full_name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $pass = $_POST['password'] ?? '';
     $confirm = $_POST['confirm_password'] ?? '';
 
-    if ($full_name === '' || $email === '' || $pass === '' || $confirm === '') {
+    if ($email === '' || $pass === '' || $confirm === '') {
         $error = 'All fields are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address.';
     } elseif ($pass !== $confirm) {
         $error = 'Passwords do not match.';
     } else {
-        $stmt = $conn->prepare('SELECT id FROM users WHERE email = ?');
-        $stmt->execute([$email]);
+        $username = $email;
+        $stmt = $conn->prepare('SELECT id FROM users WHERE email = ? OR username = ?');
+        $stmt->execute([$email, $username]);
         $existing = $stmt->fetch();
 
         if ($existing) {
             $error = 'Email is already registered.';
         } else {
-            $hash = password_hash($pass, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare('INSERT INTO users (full_name, email, password) VALUES (?, ?, ?)');
-            $stmt->execute([$full_name, $email, $hash]);
-            $success = 'Account created successfully. You can log in now.';
-            $full_name = '';
-            $email = '';
+            try {
+                $hash = password_hash($pass, PASSWORD_DEFAULT);
+                $stmt = $conn->prepare('INSERT INTO users (full_name, username, email, password) VALUES (?, ?, ?, ?)');
+                $stmt->execute([$full_name, $username, $email, $hash]);
+                $success = 'Account created successfully. You can log in now.';
+                $email = '';
+            } catch (PDOException $e) {
+                $error = 'Unable to create account. Please try again.';
+            }
         }
     }
 }
@@ -55,7 +58,6 @@ if (isset($_POST['register'])) {
         <?php if (isset($error)) echo "<p class='error'>$error</p>"; ?>
         <?php if (isset($success)) echo "<p class='success'>$success</p>"; ?>
         <form method="POST">
-            <input type="text" name="full_name" placeholder="Full Name" value="<?= htmlspecialchars($full_name) ?>" required>
             <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($email) ?>" required>
             <input type="password" id="password" name="password" placeholder="Password" required>
             <div id="passwordStrength" class="helper"></div>

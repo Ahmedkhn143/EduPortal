@@ -49,26 +49,30 @@ include 'includes/header.php';
     <div class="stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px;">
         
         <!-- Total Students Card -->
-        <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #3498db;">
-            <h3 style="font-size: 14px; color: #95a5a6; text-transform: uppercase; margin-bottom: 10px;">Total Students</h3>
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-size: 36px; font-weight: bold; color: #2c3e50;"><?= $total_students; ?></span>
-                <span style="font-size: 24px;">👥</span>
+        <a href="modules/students/index.php" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #3498db;">
+                <h3 style="font-size: 14px; color: #95a5a6; text-transform: uppercase; margin-bottom: 10px;">Total Students</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 36px; font-weight: bold; color: #2c3e50;"><?= $total_students; ?></span>
+                    <span style="font-size: 24px;">👥</span>
+                </div>
             </div>
-        </div>
+        </a>
 
         <!-- Active Courses Card -->
-        <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #9b59b6;">
-            <h3 style="font-size: 14px; color: #95a5a6; text-transform: uppercase; margin-bottom: 10px;">Active Courses</h3>
-            <div style="display: flex; align-items: center; justify-content: space-between;">
-                <span style="font-size: 36px; font-weight: bold; color: #2c3e50;"><?= $total_courses; ?></span>
-                <span style="font-size: 24px;">📚</span>
+        <a href="modules/courses/index.php" style="text-decoration: none; color: inherit;">
+            <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #9b59b6;">
+                <h3 style="font-size: 14px; color: #95a5a6; text-transform: uppercase; margin-bottom: 10px;">Active Courses</h3>
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 36px; font-weight: bold; color: #2c3e50;"><?= $total_courses; ?></span>
+                    <span style="font-size: 24px;">📚</span>
+                </div>
             </div>
-        </div>
+        </a>
 
         <!-- New Registrations Today Card -->
         <div class="stat-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-left: 6px solid #2ecc71;">
-            <h3 style="font-size: 14px; color: #95a5a6; text-transform: uppercase; margin-bottom: 10px;">New Today</h3>
+            <h3 style="font-size: 14px; color: #95a5a6; text-transform: uppercase; margin-bottom: 10px;">New Students Today</h3>
             <div style="display: flex; align-items: center; justify-content: space-between;">
                 <span style="font-size: 36px; font-weight: bold; color: #2c3e50;"><?= $today_regs; ?></span>
                 <span style="font-size: 24px;">⭐</span>
